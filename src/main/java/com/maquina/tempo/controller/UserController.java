@@ -1,6 +1,7 @@
 package com.maquina.tempo.controller;
 
 import com.maquina.tempo.dto.UserDTO;
+import com.maquina.tempo.dto.UserLogin;
 import com.maquina.tempo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -27,4 +28,15 @@ public class UserController {
         ResponseEntity responseUser = userService.saveUser(user);
         return ResponseEntity.ok(responseUser);
     }
+
+    @PostMapping("/login")
+    ResponseEntity<?> login(@Valid @RequestBody UserLogin user, BindingResult result) {
+        if (result.hasErrors()) {
+            return ResponseEntity.badRequest().body(result);
+        }
+        ResponseEntity responseUser = userService.loginUser(user);
+        return ResponseEntity.ok(responseUser);
+    }
+
+
 }
