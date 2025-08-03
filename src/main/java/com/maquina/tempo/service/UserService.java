@@ -3,6 +3,7 @@ package com.maquina.tempo.service;
 import com.maquina.tempo.dto.UserDTO;
 import com.maquina.tempo.dto.UserLogin;
 import com.maquina.tempo.entities.User;
+import com.maquina.tempo.entities.VerificationToken;
 import com.maquina.tempo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,13 +18,17 @@ public class UserService {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    TokenService tokenService;
+
     //Cadastro USer
     public ResponseEntity saveUser(UserDTO userDTO) {
 
         if(!userExists(userDTO.email())){
             User user = fromDTO(userDTO);
             userRepository.save(user);
-            return ResponseEntity.status(HttpStatus.OK).body("Created");
+            tokenService.registerToken(user);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Created");
         }
         return ResponseEntity.status(HttpStatus.CONFLICT).body("User Exist");
     }
@@ -34,14 +39,13 @@ public class UserService {
         if(userExists(login.email())){
             Optional<User> userOptional = userRepository.findByEmail(login.email());
             User user = userOptional.orElse(null);
-            if(login.password().equals(user.getPassword())){
+            if(login.password().equals(user.getPassword()) && user.isActive()){
                 return ResponseEntity.status(HttpStatus.OK).body(user);
             }
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Password Mismatch");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Password Mismatch or Account is not Active");
         }
         return ResponseEntity.status(HttpStatus.CONFLICT).body("User dont Exist");
     }
-
 
     //Verificação
     public boolean userExists(String email) {

@@ -7,6 +7,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "users")
 @AllArgsConstructor
@@ -21,10 +24,24 @@ public class User {
     private String name;
     private String email;
     private String password;
+    private boolean isActive = false;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<VerificationToken> tokens;
 
     public User(String name, String email, String password) {
         this.name = name;
         this.email = email;
         this.password = password;
     }
+
+    public void addToken (VerificationToken token) {
+
+        if(this.tokens == null) {
+            this.tokens = new ArrayList<>();
+        }
+        tokens.add(token);
+        token.setUser(this);
+    }
+
 }
