@@ -1,6 +1,7 @@
 package com.maquina.tempo.entities;
 
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,6 +28,7 @@ public class User {
     private boolean isActive = false;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<VerificationToken> tokens;
 
     public User(String name, String email, String password) {
@@ -35,13 +37,12 @@ public class User {
         this.password = password;
     }
 
-    public void addToken (VerificationToken token) {
+    public void addToken(VerificationToken token) {
 
-        if(this.tokens == null) {
+        if (this.tokens == null) {
             this.tokens = new ArrayList<>();
         }
         tokens.add(token);
         token.setUser(this);
     }
-
 }

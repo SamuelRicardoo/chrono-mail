@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -54,6 +55,12 @@ public class UserService {
             return true;
         }
         return false;
+    }
+
+    public void activeAccountUser(UUID uuid) {
+
+
+
     }
 
     private User fromDTO(UserDTO userDTO) {
