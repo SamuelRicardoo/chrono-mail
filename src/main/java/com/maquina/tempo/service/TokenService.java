@@ -35,12 +35,16 @@ public class TokenService {
         verificationTokenRepository.save(token);
         user.addToken(token);
 
+        String activationLink = "http://localhost:8080/activation/action?uuid=" + token.getToken();
+
+        String htmlMessage = "<p>Olá, " + user.getName() + "!</p>"
+                + "<p>Clique no link abaixo para ativar sua conta. O link é válido por 30 minutos:</p>"
+                + "<p><a href=\"" + activationLink + "\">Clique aqui</a></p>";
+
         emailService.sendEmail(
                 user.getEmail(),
                 "Ativação de conta",
-                "Olá, " + user.getName() + "!\n\nClique no link abaixo para ativar sua conta. O link é válido por 30 minutos:\n\n" +
-                        "http://localhost:8080/api/activate?token=" + token.getToken());
-
+                htmlMessage);
     }
 
     public ResponseEntity activateToken(UUID uuidUser) {
@@ -62,10 +66,4 @@ public class TokenService {
         userRepository.save(user);
         return ResponseEntity.ok().body("Account Activity");
     }
-
-
-
-
-
-
 }

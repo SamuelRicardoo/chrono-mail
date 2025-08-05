@@ -17,7 +17,7 @@ public class ActivationController {
     @Autowired
     TokenService tokenService;
 
-    @GetMapping()
+    @GetMapping("/action")
     public ResponseEntity activation(@RequestParam UUID uuid) {
         ResponseEntity response = tokenService.activateToken(uuid);
         return ResponseEntity.ok(response);
