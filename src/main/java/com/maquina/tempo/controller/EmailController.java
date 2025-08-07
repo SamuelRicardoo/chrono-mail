@@ -12,7 +12,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/activation")
-public class ActivationController {
+public class EmailController {
 
     @Autowired
     TokenService tokenService;
@@ -23,4 +23,9 @@ public class ActivationController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("recoverPassword")
+    public ResponseEntity recoverPassword(@RequestParam Long idUser) {
+        ResponseEntity response = tokenService.sedEmailResetPassword(idUser);
+        return ResponseEntity.ok(response);
+    }
 }

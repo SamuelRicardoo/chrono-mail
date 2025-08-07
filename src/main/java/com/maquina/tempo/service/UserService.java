@@ -1,9 +1,12 @@
 package com.maquina.tempo.service;
 
+import com.fasterxml.jackson.databind.annotation.JsonAppend;
+import com.maquina.tempo.dto.RecoverUserDTO;
 import com.maquina.tempo.dto.UserDTO;
 import com.maquina.tempo.dto.UserLogin;
 import com.maquina.tempo.entities.User;
 import com.maquina.tempo.entities.VerificationToken;
+import com.maquina.tempo.repository.TokenRepository;
 import com.maquina.tempo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,6 +25,9 @@ public class UserService {
 
     @Autowired
     TokenService tokenService;
+
+    @Autowired
+    TokenRepository tokenRepository;
 
     //Cadastro USer
     @Transactional
@@ -50,6 +56,24 @@ public class UserService {
         return ResponseEntity.status(HttpStatus.CONFLICT).body("User dont Exist");
     }
 
+    @Transactional
+    public ResponseEntity recoverUser(RecoverUserDTO recoverUserDTO, UUID token) {
+
+        Optional<User> recoverUser = userRepository.findUserByToken(token);
+
+        if(!recoverUser.isPresent()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+
+        User user = recoverUser.get();
+
+        if(recoverUserDTO.newPassword().equals(recoverUserDTO.confirmPassword())){
+            user.setPassword(recoverUserDTO.newPassword());
+            userRepository.save(user);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(user);
+    }
+
     //Verificação
     public boolean userExists(String email) {
         Optional<User> user = userRepository.findByEmail(email);
@@ -57,12 +81,6 @@ public class UserService {
             return true;
         }
         return false;
-    }
-
-    public void activeAccountUser(UUID uuid) {
-
-
-
     }
 
     private User fromDTO(UserDTO userDTO) {
