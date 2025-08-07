@@ -3,7 +3,7 @@ package com.maquina.tempo.service;
 import com.maquina.tempo.entities.User;
 import com.maquina.tempo.entities.VerificationToken;
 import com.maquina.tempo.repository.UserRepository;
-import com.maquina.tempo.repository.VerificationTokenRepository;
+import com.maquina.tempo.repository.TokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +17,7 @@ import java.util.UUID;
 public class TokenService {
 
     @Autowired
-    VerificationTokenRepository verificationTokenRepository;
+    TokenRepository verificationTokenRepository;
 
     @Autowired
     EmailService emailService;
@@ -66,4 +66,31 @@ public class TokenService {
         userRepository.save(user);
         return ResponseEntity.ok().body("Account Activity");
     }
+
+    public ResponseEntity sedEmailResetPassword(Long userID) {
+        Optional<User> user = userRepository.findById(userID);
+        if (user.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        User userEmail =  user.get();
+
+        VerificationToken token = new VerificationToken();
+        token.setToken(UUID.randomUUID());
+        token.setCreated(LocalDateTime.now());
+        token.setExpiration(LocalDateTime.now().plusMinutes(30));
+        token.setUser(userEmail);
+        verificationTokenRepository.save(token);
+        userEmail.addToken(token);
+
+        String htmlMessage = "<p>Olá, " + userEmail.getName() + "!</p>"
+                + "<p>Seu codigo de recuperação de conta. O Codigo é válido por 30 minutos:</p>"
+                + "<p>" + token.getToken() + "</p>";
+
+        emailService.sendEmail(userEmail.getEmail(), "Recuperação de conta", htmlMessage);
+
+        return ResponseEntity.ok().build();
+    }
+
+
 }

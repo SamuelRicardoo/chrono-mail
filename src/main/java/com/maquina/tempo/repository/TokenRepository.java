@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface VerificationTokenRepository extends JpaRepository<VerificationToken, Long> {
+public interface TokenRepository extends JpaRepository<VerificationToken, Long> {
     Optional<VerificationToken> findByToken(UUID token);
 
 }
