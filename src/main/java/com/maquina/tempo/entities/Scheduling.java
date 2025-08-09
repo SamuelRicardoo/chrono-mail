@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
@@ -25,7 +27,7 @@ public class Scheduling {
 
     private String toAddress;
     private String fromAddress;
-    private String date;
+    private LocalDate date;
     private String  mensage;
-    private boolean isSend;
+    private boolean isSend = false;
 }
