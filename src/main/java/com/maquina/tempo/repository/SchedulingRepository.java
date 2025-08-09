@@ -10,6 +10,6 @@ import java.util.List;
 @Repository
 public interface SchedulingRepository extends JpaRepository<Scheduling,Long> {
 
-    @Query("SELECT s FROM Scheduling s WHERE DATE(s.date) = CURRENT_DATE")
+    @Query("SELECT s FROM Scheduling s WHERE (s.date) = CURRENT_DATE")
     List<Scheduling> findBySchedulingTimeToday();
 }

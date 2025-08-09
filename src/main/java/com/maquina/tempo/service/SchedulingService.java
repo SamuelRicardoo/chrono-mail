@@ -6,6 +6,7 @@ import com.maquina.tempo.entities.User;
 import com.maquina.tempo.repository.SchedulingRepository;
 import com.maquina.tempo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -29,12 +30,12 @@ public class SchedulingService {
 
         User user = userRepository.findById(idUser).orElse(null);
 
-        if (user != null) {
-            return ResponseEntity.notFound().build();
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não encontrado");
         }
 
         if (schedulingDTO.date().isBefore(LocalDate.now())) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body("Data inválida");
         }
 
         Scheduling scheduling = fromDTO(schedulingDTO);
@@ -62,6 +63,7 @@ public class SchedulingService {
     public Scheduling fromDTO(SchedulingDTO schedulingDTO) {
         Scheduling scheduling = new Scheduling();
         scheduling.setMensage(schedulingDTO.mensage());
+        scheduling.setToAddress(schedulingDTO.toAddress());
         scheduling.setFromAddress(schedulingDTO.fromAddress());
         scheduling.setDate(schedulingDTO.date());
         scheduling.setMensage(schedulingDTO.mensage());
