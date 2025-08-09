@@ -91,6 +91,4 @@ public class TokenService {
 
         return ResponseEntity.ok().build();
     }
-
-
 }
